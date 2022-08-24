@@ -1,1 +1,1 @@
-# Assigment ler sırayla
+# Assigment
