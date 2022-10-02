@@ -11,74 +11,6 @@ appropriate SQL Server Built-in functions or
 expressions as well as basic SQL knowledge.
 */
 
-select c.customer_id, d.first_name, d.last_name,a.product_name
-from product.product a, sale.order_item b,
-sale.orders c, sale.customer d
-where a.product_id = b.product_id and
-b.order_id = c.order_id and 
-c.customer_id = d.customer_id
-and d.customer_id in
-					(select c.customer_id
-					from product.product a, sale.order_item b,
-					sale.orders c, sale.customer d
-					where a.product_id = b.product_id and
-					b.order_id = c.order_id and 
-					c.customer_id = d.customer_id and
-					a.product_name =  '2TB Red 5400 rpm SATA III 3.5 Internal NAS HDD')
-group by c.customer_id, d.first_name, d.last_name, a.product_name
-having a.product_name = 'Polk Audio - 50 W Woofer - Black' or
-a.product_name = '2TB Red 5400 rpm SATA III 3.5 Internal NAS HDD'
-
-
-
-
-
-
-
-select c.customer_id, d.first_name, d.last_name,a.product_name
-from product.product a, sale.order_item b,
-sale.orders c, sale.customer d
-where a.product_id = b.product_id and
-b.order_id = c.order_id and 
-c.customer_id = d.customer_id
-and d.customer_id in
-					(select distinct  c.customer_id
-					from product.product a, sale.order_item b,
-					sale.orders c, sale.customer d
-					where a.product_id = b.product_id and
-					b.order_id = c.order_id and 
-					c.customer_id = d.customer_id and
-					a.product_name =  '2TB Red 5400 rpm SATA III 3.5 Internal NAS HDD')
-and a.product_name = ('Polk Audio - 50 W Woofer - Black')
-
-
-
-select a.customer_id, a.first_name, a.last_name, b.Other, isnull(b.other, 'No')
-from sale.customer a left join
-				(select c.customer_id, d.first_name, d.last_name,a.product_name, 'Yes' as Other
-				from product.product a, sale.order_item b,
-				sale.orders c, sale.customer d
-				where a.product_id = b.product_id and
-				b.order_id = c.order_id and 
-				c.customer_id = d.customer_id
-				and d.customer_id in
-									(select distinct  c.customer_id
-									from product.product a, sale.order_item b,
-									sale.orders c, sale.customer d
-									where a.product_id = b.product_id and
-									b.order_id = c.order_id and 
-									c.customer_id = d.customer_id and
-									a.product_name =  '2TB Red 5400 rpm SATA III 3.5 Internal NAS HDD')
-				and a.product_name = ('Polk Audio - 50 W Woofer - Black')) as b
-on a.customer_id = b.customer_id
-where a.customer_id in (select distinct  c.customer_id
-									from product.product a, sale.order_item b,
-									sale.orders c, sale.customer d
-									where a.product_id = b.product_id and
-									b.order_id = c.order_id and 
-									c.customer_id = d.customer_id and
-									a.product_name =  '2TB Red 5400 rpm SATA III 3.5 Internal NAS HDD')
-
 -------------------------
 select a.customer_id, a.first_name, a.last_name, isnull(b.other, 'No') as other_product
 from sale.customer a left join
@@ -88,6 +20,7 @@ from sale.customer a left join
 				where a.product_id = b.product_id and
 				b.order_id = c.order_id and 
 				c.customer_id = d.customer_id
+				and a.product_name = 'Polk Audio - 50 W Woofer - Black'
 				and d.customer_id in
 									(select distinct  c.customer_id
 									from product.product a, sale.order_item b,
@@ -96,7 +29,7 @@ from sale.customer a left join
 									b.order_id = c.order_id and 
 									c.customer_id = d.customer_id and
 									a.product_name =  '2TB Red 5400 rpm SATA III 3.5 Internal NAS HDD')
-				and a.product_name = ('Polk Audio - 50 W Woofer - Black')) as b
+				) as b
 on a.customer_id = b.customer_id
 where a.customer_id in (select distinct  c.customer_id
 									from product.product a, sale.order_item b,
@@ -145,38 +78,6 @@ values  ( 'A', 'Left'),
 
 select * from actions
 
-
-select adv_type, action, count(*) as total
+select adv_type,left((COUNT(case when action = 'Order' then 1 end) * 1.0 / count(adv_type)),4) as conversion_rate
 from actions
-group by 
-grouping sets( 
-			(adv_type, action),
-			(adv_type),
-			()
-			)
-order by 1
-
-select adv_type, count(*) / (select count(adv_type)
-							from actions
-							where adv_type = 'a')
-from actions
-where action = 'Review'
 group by adv_type
-
-
-
-select adv_type,action, count(*)
-from actions
-where action = 'Review'
-group by adv_type, action
-
-
-		
-select adv_type, action, count(*) as total
-from actions
-group by 
-grouping sets( 
-			(adv_type, action),
-			(adv_type)
-			)
-order by 1
